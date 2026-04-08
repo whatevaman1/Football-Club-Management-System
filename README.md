@@ -105,7 +105,7 @@ erDiagram
 2. Run the SQL scripts found in the `database/` folder in the following order:
    - `schema.sql`: Creates the database and tables.
    - `data.sql`: Inserts sample data.
-   - `queries.sql`: Contains useful views and queries for your viva.
+   - `queries.sql`: Contains useful views and queries.
 
 ### Step 2: Backend Setup
 1. Open a terminal and navigate to the `backend` folder: `cd backend`
