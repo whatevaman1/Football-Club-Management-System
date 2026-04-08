@@ -50,7 +50,7 @@ CREATE TABLE Contract (
     FOREIGN KEY (ClubID) REFERENCES Club(ClubID) ON DELETE CASCADE
 );
 
--- 6. PlayerSalary Table (Salary History)
+-- 6. PlayerSalary Table
 CREATE TABLE PlayerSalary (
     SalaryID INT AUTO_INCREMENT PRIMARY KEY,
     PlayerID INT,
@@ -108,6 +108,8 @@ CREATE TABLE TransferHistory (
 );
 
 -- Trigger: check_contract_expiry
+DELIMITER $$
+
 CREATE TRIGGER check_contract_expiry
 BEFORE UPDATE ON Contract
 FOR EACH ROW
@@ -116,5 +118,6 @@ BEGIN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Contract expired';
     END IF;
-END;
+END$$
 
+DELIMITER ;
