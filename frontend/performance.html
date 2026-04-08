@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FC Management - Performance</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav>
+        <div class="logo">FC Management</div>
+        <ul>
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="players.html">Players</a></li>
+            <li><a href="salaries.html">Salaries</a></li>
+            <li><a href="clubs.html">Clubs</a></li>
+            <li><a href="performance.html" class="active">Performance</a></li>
+            <li><a href="loaned.html">Loaned</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Top Performers</h1>
+            <p>Highlighting the best players based on goal involvements</p>
+        </div>
+
+        <div class="filters">
+            <select id="perfClub" onchange="loadPerformance()">
+                <option value="">All Clubs</option>
+            </select>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player Name</th>
+                        <th>Club</th>
+                        <th>Season</th>
+                        <th>Matches Played</th>
+                        <th>Goals</th>
+                        <th>Assists</th>
+                        <th>Total Involvements</th>
+                    </tr>
+                </thead>
+                <tbody id="perfBody">
+                    <tr><td colspan="8" style="text-align:center;">Loading data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        async function loadClubs() {
+            try {
+                const response = await fetch(`${API_URL}/clubs`);
+                const clubs = await response.json();
+                const sel = document.getElementById('perfClub');
+                clubs.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.Name; // Filtering uses Name based on our backend
+                    opt.textContent = c.Name;
+                    sel.appendChild(opt);
+                });
+            } catch(e) {}
+        }
+
+        async function loadPerformance() {
+            const clubName = document.getElementById('perfClub').value;
+            const endpoint = clubName ? `performance?club=${encodeURIComponent(clubName)}` : `performance`;
+            
+            fetchData(endpoint, 'perfBody', (perf, index) => {
+                const isTop = index === 0 ? 'highlight-row' : '';
+                const trophy = index === 0 ? '🏆 ' : '';
+                return `
+                <tr class="${isTop}">
+                    <td>#${index + 1}</td>
+                    <td><strong>${trophy}${perf.PlayerName}</strong></td>
+                    <td><span style="color:var(--accent)">${perf.ClubName || 'Unknown'}</span></td>
+                    <td>${perf.Season}</td>
+                    <td>${perf.MatchesPlayed || '-'}</td>
+                    <td>${perf.Goals}</td>
+                    <td>${perf.Assists}</td>
+                    <td><strong>${perf.TotalInvolvements}</strong></td>
+                </tr>
+            `});
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadClubs();
+            loadPerformance();
+        });
+    </script>
+</body>
+</html>

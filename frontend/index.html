@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FC Management - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background-color: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.5);
+            border-top: 4px solid var(--accent);
+            animation: fadeInUp 0.8s ease;
+        }
+        .card h3 {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        .card p {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--highlight);
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">FC Management</div>
+        <ul>
+            <li><a href="index.html" class="active">Dashboard</a></li>
+            <li><a href="players.html">Players</a></li>
+            <li><a href="salaries.html">Salaries</a></li>
+            <li><a href="clubs.html">Clubs</a></li>
+            <li><a href="performance.html">Performance</a></li>
+            <li><a href="loaned.html">Loaned</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="hero" style="padding: 3rem 1rem;">
+            <h2>System Dashboard</h2>
+            <p>Real-time analytics for your football club management system</p>
+        </div>
+        
+        <div class="dashboard-cards" id="dashboardCards">
+            <div class="card"><h3>Total Players</h3><p>...</p></div>
+            <div class="card"><h3>Total Clubs</h3><p>...</p></div>
+            <div class="card"><h3>Players on Loan</h3><p>...</p></div>
+            <div class="card" style="border-top-color: var(--highlight);"><h3>Top Scorer</h3><p style="font-size: 1.5rem;">...</p></div>
+        </div>
+
+        <div class="page-header">
+            <h1>Quick System Overview</h1>
+        </div>
+        
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Player Management</strong></td>
+                        <td>Added CRUD ops for HR to Add/Delete players.</td>
+                        <td><span style="color:var(--highlight)">Active</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Salary Tracking</strong></td>
+                        <td>Track disbursement history over time.</td>
+                        <td><span style="color:var(--highlight)">Active</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Performance Stats</strong></td>
+                        <td>Goals, assists, matches played per season.</td>
+                        <td><span style="color:var(--highlight)">Active</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/dashboard');
+                const data = await response.json();
+                
+                const cardsContainer = document.getElementById('dashboardCards');
+                cardsContainer.innerHTML = `
+                    <div class="card">
+                        <h3>Total Players</h3>
+                        <p>${data.totalPlayers}</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Clubs</h3>
+                        <p>${data.totalClubs}</p>
+                    </div>
+                    <div class="card">
+                        <h3>Players on Loan</h3>
+                        <p>${data.loanedPlayers}</p>
+                    </div>
+                    <div class="card" style="border-top-color: var(--highlight);">
+                        <h3>Top Scorer</h3>
+                        <p style="font-size: 1.8rem; margin-top: 0.5rem; color: #fff;">🏆 ${data.topScorer}</p>
+                    </div>
+                `;
+            } catch (error) {
+                console.error("Dashboard error:", error);
+            }
+        });
+    </script>
+</body>
+</html>

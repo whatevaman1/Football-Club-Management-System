@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FC Management - Loan Center</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav>
+        <div class="logo">FC Management</div>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="players.html">Players</a></li>
+            <li><a href="clubs.html">Clubs</a></li>
+            <li><a href="performance.html">Performance</a></li>
+            <li><a href="loaned.html" class="active">Loaned Players</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Loan Center</h1>
+            <p>Active and historical player loan transfers</p>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Player Name</th>
+                        <th>Parent Club</th>
+                        <th>Loaned To</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                    </tr>
+                </thead>
+                <tbody id="loanedBody">
+                    <tr><td colspan="5" style="text-align:center;">Loading data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData('loaned', 'loanedBody', (loan) => `
+                <tr>
+                    <td><strong>${loan.PlayerName}</strong></td>
+                    <td>${loan.ParentClub}</td>
+                    <td><span style="color:var(--highlight)">${loan.LoanClub}</span></td>
+                    <td>${new Date(loan.StartDate).toLocaleDateString()}</td>
+                    <td>${new Date(loan.EndDate).toLocaleDateString()}</td>
+                </tr>
+            `);
+        });
+    </script>
+</body>
+</html>

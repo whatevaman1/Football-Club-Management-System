@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FC Management - Salaries</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav>
+        <div class="logo">FC Management</div>
+        <ul>
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="players.html">Players</a></li>
+            <li><a href="salaries.html" class="active">Salaries</a></li>
+            <li><a href="clubs.html">Clubs</a></li>
+            <li><a href="performance.html">Performance</a></li>
+            <li><a href="loaned.html">Loaned</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Salary Disbursement History</h1>
+            <p>Tracking historical player payments over time</p>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Player Name</th>
+                        <th>Amount Disbursed (£)</th>
+                        <th>Date Paid</th>
+                    </tr>
+                </thead>
+                <tbody id="salBody">
+                    <tr><td colspan="3" style="text-align:center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData('salaries', 'salBody', (sal) => `
+                <tr>
+                    <td><strong>${sal.PlayerName}</strong></td>
+                    <td><span style="color:var(--highlight)">£${parseFloat(sal.Amount).toLocaleString()}</span></td>
+                    <td>${new Date(sal.DatePaid).toLocaleDateString()}</td>
+                </tr>
+            `);
+        });
+    </script>
+</body>
+</html>

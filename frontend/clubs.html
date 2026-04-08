@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FC Management - Clubs</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav>
+        <div class="logo">FC Management</div>
+        <ul>
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="players.html">Players</a></li>
+            <li><a href="salaries.html">Salaries</a></li>
+            <li><a href="clubs.html" class="active">Clubs</a></li>
+            <li><a href="performance.html">Performance</a></li>
+            <li><a href="loaned.html">Loaned</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Club Directory</h1>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Club Name</th>
+                        <th>Founded</th>
+                        <th>Stadium</th>
+                        <th>Location (City)</th>
+                    </tr>
+                </thead>
+                <tbody id="clubsBody">
+                    <tr><td colspan="4" style="text-align:center;">Loading data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData('clubs', 'clubsBody', (club) => `
+                <tr class="clickable-row" onclick="toggleClubDetails('${club.ClubID}', '${club.Name.replace(/'/g, "\\'")}')">
+                    <td><strong>${club.Name}</strong></td>
+                    <td>${club.FoundedYear}</td>
+                    <td>${club.Stadium}</td>
+                    <td>${club.City}</td>
+                </tr>
+                <tr class="details-row" id="club-details-${club.ClubID}">
+                    <td colspan="4">
+                        <div class="details-content" id="club-content-${club.ClubID}">
+                            <p style="text-align: center;">Loading players...</p>
+                        </div>
+                    </td>
+                </tr>
+            `);
+        });
+
+        async function toggleClubDetails(id, name) {
+            const row = document.getElementById(`club-details-${id}`);
+            const content = document.getElementById(`club-content-${id}`);
+            
+            if (row.style.display === 'table-row') {
+                row.style.display = 'none';
+                return;
+            }
+            
+            // Expand Row
+            row.style.display = 'table-row';
+            
+            try {
+                const response = await fetch(`${API_URL}/players?club=${encodeURIComponent(name)}`);
+                const players = await response.json();
+                
+                if (players.length === 0) {
+                    content.innerHTML = '<p>No active players signed to this club.</p>';
+                    return;
+                }
+                
+                let ul = '<ul>';
+                players.forEach(p => {
+                    ul += `<li><strong>${p.Name}</strong><br><span style="font-size:0.85rem; color: #6b7280;">${p.Position} • #${p.ShirtNumber || '-'}</span></li>`;
+                });
+                ul += '</ul>';
+                content.innerHTML = ul;
+                
+            } catch (err) {
+                content.innerHTML = '<p style="color: #ef4444;">Error fetching players.</p>';
+            }
+        }
+    </script>
+</body>
+</html>

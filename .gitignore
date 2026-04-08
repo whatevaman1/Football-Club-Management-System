@@ -1,0 +1,14 @@
+# Dependency directories
+node_modules/
+
+# Sensitive Data / Credentials
+backend/db.js
+.env
+
+# MacOS/Windows System Files
+.DS_Store
+Thumbs.db
+
+# Any temporary scripts used
+backend/init-db.js
+backend/seedData.js
