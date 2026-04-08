@@ -1,6 +1,6 @@
 # Football Club Management System
 
-## System Design & Architecture (Agent 1)
+## System Design & Architecture
 
 ### 1. Entities & Relationships
 - **Club**: The core entity. A club has one manager, multiple coaches, and multiple players.
