@@ -1,6 +1,6 @@
 # Football Club Management System
 
-## System Design & Architecture (Agent 1)
+## System Design & Architecture
 
 ### 1. Entities & Relationships
 - **Club**: The core entity. A club has one manager, multiple coaches, and multiple players.
@@ -94,7 +94,7 @@ erDiagram
     COACH }|--|{ PLAYERCOACH : trains
 ```
 
-## Running the Project (Agent 4)
+## Running the Project
 
 ### Prerequisites
 1. MySQL Workbench locally installed.
