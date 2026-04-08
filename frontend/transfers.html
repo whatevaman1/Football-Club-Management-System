@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FC Management - Transfers</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav>
+        <div class="logo">FC Management</div>
+        <ul>
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="players.html">Players</a></li>
+            <li><a href="contracts.html">Contracts</a></li>
+            <li><a href="salaries.html">Salaries</a></li>
+            <li><a href="clubs.html">Clubs</a></li>
+            <li><a href="performance.html">Performance</a></li>
+            <li><a href="transfers.html" class="active">Transfers</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Transfer Market History</h1>
+            <p>Tracking player movement and historical transfer fees across all clubs</p>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Player Name</th>
+                        <th>From Club</th>
+                        <th>To Club</th>
+                        <th>Transfer Fee (£)</th>
+                    </tr>
+                </thead>
+                <tbody id="transferBody">
+                    <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData('transfers', 'transferBody', (t) => {
+                const feeDisplay = t.TransferFee ? `£${parseFloat(t.TransferFee).toLocaleString()}` : 'Free Transfer';
+                return `
+                <tr>
+                    <td>${new Date(t.TransferDate).toLocaleDateString('en-GB')}</td>
+                    <td><strong>${t.PlayerName || 'Unknown Player'}</strong></td>
+                    <td><span style="color: #ef4444">${t.FromClub || 'Free Agent'}</span></td>
+                    <td><span style="color: #10b981">${t.ToClub || 'Released'}</span></td>
+                    <td><strong>${feeDisplay}</strong></td>
+                </tr>
+            `});
+        });
+    </script>
+</body>
+</html>

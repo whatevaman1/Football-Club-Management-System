@@ -93,3 +93,28 @@ CREATE TABLE PlayerCoach (
     FOREIGN KEY (PlayerID) REFERENCES Player(PlayerID) ON DELETE CASCADE,
     FOREIGN KEY (CoachID) REFERENCES Coach(CoachID) ON DELETE CASCADE
 );
+
+-- 10. TransferHistory Table
+CREATE TABLE TransferHistory (
+    TransferID INT AUTO_INCREMENT PRIMARY KEY,
+    PlayerID INT,
+    FromClubID INT,
+    ToClubID INT,
+    TransferDate DATE,
+    TransferFee DECIMAL(15,2),
+    FOREIGN KEY (PlayerID) REFERENCES Player(PlayerID) ON DELETE CASCADE,
+    FOREIGN KEY (FromClubID) REFERENCES Club(ClubID) ON DELETE SET NULL,
+    FOREIGN KEY (ToClubID) REFERENCES Club(ClubID) ON DELETE SET NULL
+);
+
+-- Trigger: check_contract_expiry
+CREATE TRIGGER check_contract_expiry
+BEFORE UPDATE ON Contract
+FOR EACH ROW
+BEGIN
+    IF NEW.EndDate < CURDATE() THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Contract expired';
+    END IF;
+END;
+

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FC Management - Free Agents</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav>
+        <div class="logo">FC Management</div>
+        <ul>
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="players.html">Players</a></li>
+            <li><a href="contracts.html">Contracts</a></li>
+            <li><a href="transfers.html">Transfers</a></li>
+            <li><a href="salaries.html">Salaries</a></li>
+            <li><a href="clubs.html">Clubs</a></li>
+            <li><a href="performance.html">Performance</a></li>
+            <li><a href="free_agents.html" class="active">Free Agents</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Available Free Agents</h1>
+            <p>Players currently without a registered club contract</p>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Player ID</th>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Nationality</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="freeAgentsBody">
+                    <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData('free_agents', 'freeAgentsBody', (f) => `
+                <tr>
+                    <td>${f.PlayerID}</td>
+                    <td><strong>${f.Name}</strong></td>
+                    <td>${f.Position || 'Unknown'}</td>
+                    <td>${f.Nationality || '-'}</td>
+                    <td><button style="background:var(--highlight); color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;" onclick="window.location.href='players.html'">Sign to Club</button></td>
+                </tr>
+            `);
+        });
+    </script>
+</body>
+</html>

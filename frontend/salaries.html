@@ -27,17 +27,39 @@
             <p>Tracking historical player payments over time</p>
         </div>
 
+        <!-- Club Expenditure Summary -->
+        <h2 style="margin-bottom: 1rem;">Club Wage Dependencies</h2>
+        <div class="table-wrapper" style="margin-bottom: 3rem;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Club</th>
+                        <th>Total Expenditure (£)</th>
+                        <th>Highest Wage</th>
+                        <th>Average Wage</th>
+                        <th>Lowest Wage</th>
+                    </tr>
+                </thead>
+                <tbody id="clubExpBody">
+                    <tr><td colspan="5" style="text-align:center;">Loading expenditures...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 style="margin-bottom: 1rem;">Individual Player Disbursements</h2>
+
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
                         <th>Player Name</th>
                         <th>Amount Disbursed (£)</th>
+                        <th>10% Performance Bonus</th>
                         <th>Date Paid</th>
                     </tr>
                 </thead>
                 <tbody id="salBody">
-                    <tr><td colspan="3" style="text-align:center;">Loading...</td></tr>
+                    <tr><td colspan="4" style="text-align:center;">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -45,14 +67,38 @@
 
     <script src="js/main.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             fetchData('salaries', 'salBody', (sal) => `
                 <tr>
                     <td><strong>${sal.PlayerName}</strong></td>
                     <td><span style="color:var(--highlight)">£${parseFloat(sal.Amount).toLocaleString()}</span></td>
+                    <td><span style="color:#3b82f6">+ £${parseFloat(sal.BonusCalc).toLocaleString()}</span></td>
                     <td>${new Date(sal.DatePaid).toLocaleDateString()}</td>
                 </tr>
             `);
+
+            // Fetch aggregations
+            try {
+                const res = await fetch('http://localhost:3000/api/salary_aggregation');
+                const aggregations = await res.json();
+                
+                const tableBody = document.getElementById('clubExpBody');
+                tableBody.innerHTML = '';
+                
+                aggregations.forEach(club => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${club.ClubName}</strong></td>
+                        <td><span style="color:var(--highlight); font-weight:bold;">£${parseFloat(club.TotalExpenditure).toLocaleString()}</span></td>
+                        <td>£${parseFloat(club.MaxWage).toLocaleString()}</td>
+                        <td><span style="color:#fcd34d">£${parseFloat(club.AvgWage).toLocaleString(undefined, {maximumFractionDigits:0})}</span></td>
+                        <td><span style="color:#ef4444">£${parseFloat(club.MinWage).toLocaleString()}</span></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch(e) {
+                document.getElementById('clubExpBody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:#ef4444;">Error loading expenditures.</td></tr>';
+            }
         });
     </script>
 </body>

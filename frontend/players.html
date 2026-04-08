@@ -133,14 +133,22 @@
                 </tbody>
             </table>
         </div>
+
+        <div style="display:flex; justify-content:center; gap: 1rem; margin-top:2rem;">
+            <button onclick="changePage(-1)" style="padding:0.5rem 1rem; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border); border-radius:8px; cursor:pointer;">Previous</button>
+            <span id="pageTracker" style="align-self:center; font-weight:bold;">Page 1</span>
+            <button onclick="changePage(1)" style="padding:0.5rem 1rem; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border); border-radius:8px; cursor:pointer;">Next</button>
+        </div>
     </div>
 
     <script src="js/main.js"></script>
     <script>
         const API_URL = 'http://localhost:3000/api';
+        let currentPage = 1;
 
         function loadPlayers() {
-            fetchData('players', 'playersBody', (player) => `
+            document.getElementById('pageTracker').innerText = `Page ${currentPage}`;
+            fetchData(`players?page=${currentPage}&limit=10`, 'playersBody', (player) => `
                 <tr id="row-${player.PlayerID}">
                     <td>${player.PlayerID}</td>
                     <td><strong>${player.Name}</strong></td>
@@ -150,6 +158,12 @@
                     <td><button class="btn-delete" onclick="deletePlayer(${player.PlayerID})">Delete</button></td>
                 </tr>
             `);
+        }
+
+        function changePage(direction) {
+            if (currentPage === 1 && direction === -1) return;
+            currentPage += direction;
+            loadPlayers();
         }
 
         async function loadClubs() {

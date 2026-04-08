@@ -25,29 +25,14 @@ async function importDatabase() {
         console.log("✅ data.sql executed successfully.");
 
         const queriesPath = path.join(__dirname, '../database/queries.sql');
-        const queriesSQL = readQueries(fs.readFileSync(queriesPath, 'utf8'));
-        for (const query of queriesSQL) {
-            if(query.trim()) await connection.query(query);
-        }
+        const queriesSQL = fs.readFileSync(queriesPath, 'utf8');
+        await connection.query(queriesSQL);
         console.log("✅ queries.sql executed successfully.");
 
         await connection.end();
     } catch (err) {
         console.error("❌ Error executing SQL:", err.message);
     }
-}
-
-function readQueries(sqlContent) {
-    const queries = [];
-    sqlContent = sqlContent.replace(/DELIMITER \/\//g, '').replace(/DELIMITER ;/g, '');
-    let chunks = sqlContent.split('//');
-    const topPart = chunks[0].split(';');
-    topPart.forEach(p => queries.push(p));
-    if (chunks.length > 1) {
-        queries.push(chunks[1]); // Procedure
-        queries.push(chunks[2]); // Trigger
-    }
-    return queries;
 }
 
 importDatabase();

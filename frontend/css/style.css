@@ -1,5 +1,4 @@
-/* Agent 3: Frontend Styles */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
 
 :root {
     --bg-dark: #050505;
@@ -19,7 +18,7 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Outfit', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-main);
     line-height: 1.6;
@@ -85,6 +84,7 @@ nav ul li a:hover, nav ul li a.active {
     margin-bottom: 0.5rem;
     background: linear-gradient(90deg, #3b82f6, #10b981);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 

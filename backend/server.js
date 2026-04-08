@@ -36,6 +36,13 @@ app.get('/api/players', async (req, res) => {
             params.push(`%${search}%`);
         }
 
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        query += ` LIMIT ? OFFSET ?`;
+        params.push(limit, offset);
+
         const [rows] = await db.query(query, params);
         res.json(rows);
     } catch (error) {
@@ -48,7 +55,10 @@ app.get('/api/performance', async (req, res) => {
     try {
         const { club } = req.query;
         let query = `
-            SELECT p.Name AS PlayerName, cl.Name AS ClubName, perf.Season, perf.MatchesPlayed, perf.Goals, perf.Assists, (perf.Goals + perf.Assists) AS TotalInvolvements
+            SELECT p.Name AS PlayerName, cl.Name AS ClubName, perf.Season, perf.MatchesPlayed, perf.Goals, perf.Assists, ((perf.Goals * 2) + perf.Assists) AS TotalInvolvements,
+            c.WeeklyWage,
+            (perf.MatchesPlayed / NULLIF(perf.Goals + perf.Assists, 0)) AS MatchesPerContribution,
+            (c.WeeklyWage * 52 / NULLIF(perf.Goals, 0)) AS CostPerGoal
             FROM Performance perf
             INNER JOIN Player p ON perf.PlayerID = p.PlayerID
             LEFT JOIN Contract c ON p.PlayerID = c.PlayerID
@@ -62,7 +72,7 @@ app.get('/api/performance', async (req, res) => {
             params.push(club);
         }
 
-        query += ` ORDER BY TotalInvolvements DESC`;
+        query += ` ORDER BY TotalInvolvements DESC, perf.Goals DESC`;
 
         const [rows] = await db.query(query, params);
         res.json(rows);
@@ -272,6 +282,27 @@ app.get('/api/dashboard', async (req, res) => {
 });
 
 // ============================================
+// TASK 3: Player Transfer System
+// ============================================
+
+app.get('/api/transfers', async (req, res) => {
+    try {
+        const query = `
+            SELECT t.TransferID, p.Name AS PlayerName, c1.Name AS FromClub, c2.Name AS ToClub, t.TransferDate, t.TransferFee
+            FROM TransferHistory t
+            INNER JOIN Player p ON t.PlayerID = p.PlayerID
+            LEFT JOIN Club c1 ON t.FromClubID = c1.ClubID
+            LEFT JOIN Club c2 ON t.ToClubID = c2.ClubID
+            ORDER BY t.TransferDate DESC
+        `;
+        const [rows] = await db.query(query);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ============================================
 // Other Existing Endpoints (Clubs, Loans, Salary)
 // ============================================
 
@@ -295,7 +326,8 @@ app.get('/api/clubs', async (req, res) => {
 app.get('/api/loaned', async (req, res) => {
     try {
         const query = `
-            SELECT p.Name AS PlayerName, c1.Name AS ParentClub, c2.Name AS LoanClub, ld.StartDate, ld.EndDate
+            SELECT p.Name AS PlayerName, c1.Name AS ParentClub, c2.Name AS LoanClub, ld.StartDate, ld.EndDate,
+            DATEDIFF(ld.EndDate, CURDATE()) AS DaysRemaining
             FROM LoanDetail ld
             INNER JOIN Player p ON ld.PlayerID = p.PlayerID
             INNER JOIN Club c1 ON ld.ParentClubID = c1.ClubID
@@ -309,10 +341,25 @@ app.get('/api/loaned', async (req, res) => {
 app.get('/api/salaries', async (req, res) => {
     try {
         const query = `
-            SELECT p.Name AS PlayerName, ps.Amount, ps.DatePaid 
+            SELECT p.Name AS PlayerName, ps.Amount, ps.DatePaid,
+            (ps.Amount * 0.10) AS BonusCalc
             FROM PlayerSalary ps
             JOIN Player p ON ps.PlayerID = p.PlayerID
             ORDER BY ps.DatePaid DESC
+        `;
+        const [rows] = await db.query(query);
+        res.json(rows);
+    } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+app.get('/api/salary_aggregation', async (req, res) => {
+    try {
+        const query = `
+            SELECT c.Name AS ClubName, SUM(cont.WeeklyWage) AS TotalExpenditure, MAX(cont.WeeklyWage) AS MaxWage, MIN(cont.WeeklyWage) AS MinWage, AVG(cont.WeeklyWage) AS AvgWage, COUNT(cont.PlayerID) as PlayerCount
+            FROM Contract cont
+            JOIN Club c ON cont.ClubID = c.ClubID
+            GROUP BY c.ClubID
+            ORDER BY TotalExpenditure DESC
         `;
         const [rows] = await db.query(query);
         res.json(rows);

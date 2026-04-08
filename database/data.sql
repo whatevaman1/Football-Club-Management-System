@@ -97,3 +97,9 @@ INSERT INTO PlayerCoach (PlayerID, CoachID) VALUES
 (8, 4),
 (9, 5),
 (10, 8);
+
+-- Insert Transfer History
+INSERT INTO TransferHistory (PlayerID, FromClubID, ToClubID, TransferDate, TransferFee) VALUES
+(2, NULL, 1, '2023-06-14', 103000000.00), -- Jude Bellingham to Real Madrid
+(9, NULL, 5, '2023-08-12', 100000000.00), -- Harry Kane to Bayern
+(3, 5, 2, '2022-07-16', 45000000.00);     -- Lewandowski Bayern to Barca

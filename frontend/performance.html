@@ -40,11 +40,11 @@
                         <th>Rank</th>
                         <th>Player Name</th>
                         <th>Club</th>
-                        <th>Season</th>
-                        <th>Matches Played</th>
-                        <th>Goals</th>
-                        <th>Assists</th>
-                        <th>Total Involvements</th>
+                        <th>Matches</th>
+                        <th>G / A</th>
+                        <th>Pts (G*2+A)</th>
+                        <th>Mts/Contrib</th>
+                        <th>Cost per Goal</th>
                     </tr>
                 </thead>
                 <tbody id="perfBody">
@@ -79,16 +79,18 @@
             fetchData(endpoint, 'perfBody', (perf, index) => {
                 const isTop = index === 0 ? 'highlight-row' : '';
                 const trophy = index === 0 ? '🏆 ' : '';
+                const efficiency = perf.MatchesPerContribution ? parseFloat(perf.MatchesPerContribution).toFixed(2) : '-';
+                const cost = perf.CostPerGoal ? `£${parseFloat(perf.CostPerGoal).toLocaleString(undefined, {maximumFractionDigits: 0})}` : '-';
                 return `
                 <tr class="${isTop}">
                     <td>#${index + 1}</td>
                     <td><strong>${trophy}${perf.PlayerName}</strong></td>
                     <td><span style="color:var(--accent)">${perf.ClubName || 'Unknown'}</span></td>
-                    <td>${perf.Season}</td>
                     <td>${perf.MatchesPlayed || '-'}</td>
-                    <td>${perf.Goals}</td>
-                    <td>${perf.Assists}</td>
+                    <td><span style="color:var(--highlight)">${perf.Goals}</span> / ${perf.Assists}</td>
                     <td><strong>${perf.TotalInvolvements}</strong></td>
+                    <td><span style="color:#fcd34d">${efficiency}</span></td>
+                    <td><span style="color:#ef4444">${cost}</span></td>
                 </tr>
             `});
         }
