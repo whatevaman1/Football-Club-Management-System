@@ -94,7 +94,7 @@ erDiagram
     COACH }|--|{ PLAYERCOACH : trains
 ```
 
-## Running the Project (Agent 4)
+## Running the Project
 
 ### Prerequisites
 1. MySQL Workbench locally installed.
