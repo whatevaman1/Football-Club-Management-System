@@ -13,6 +13,7 @@
         <ul>
             <li><a href="index.html">Dashboard</a></li>
             <li><a href="players.html">Players</a></li>
+            <li><a href="contracts.html">Contracts</a></li>
             <li><a href="salaries.html">Salaries</a></li>
             <li><a href="clubs.html" class="active">Clubs</a></li>
             <li><a href="performance.html">Performance</a></li>
@@ -56,8 +57,14 @@
                 </tr>
                 <tr class="details-row" id="club-details-${club.ClubID}">
                     <td colspan="4">
-                        <div class="details-content" id="club-content-${club.ClubID}">
-                            <p style="text-align: center;">Loading players...</p>
+                        <div class="details-content">
+                            <div style="margin-bottom: 1rem; padding: 1rem; background: #111; border-radius: 8px; border: 1px solid #333;">
+                                <span style="display:inline-block; width: 80px; color: #888;">Manager:</span> <strong style="color: #fff;">${club.ManagerName || 'None'}</strong><br>
+                                <span style="display:inline-block; width: 80px; color: #888;">Coaches:</span> <span style="color: #ccc;">${club.Coaches || 'None'}</span>
+                            </div>
+                            <div id="club-players-${club.ClubID}">
+                                <p style="text-align: center;">Loading players...</p>
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -66,7 +73,7 @@
 
         async function toggleClubDetails(id, name) {
             const row = document.getElementById(`club-details-${id}`);
-            const content = document.getElementById(`club-content-${id}`);
+            const playersDiv = document.getElementById(`club-players-${id}`);
             
             if (row.style.display === 'table-row') {
                 row.style.display = 'none';
@@ -81,7 +88,7 @@
                 const players = await response.json();
                 
                 if (players.length === 0) {
-                    content.innerHTML = '<p>No active players signed to this club.</p>';
+                    playersDiv.innerHTML = '<p>No active players signed to this club.</p>';
                     return;
                 }
                 
@@ -90,10 +97,10 @@
                     ul += `<li><strong>${p.Name}</strong><br><span style="font-size:0.85rem; color: #6b7280;">${p.Position} • #${p.ShirtNumber || '-'}</span></li>`;
                 });
                 ul += '</ul>';
-                content.innerHTML = ul;
+                playersDiv.innerHTML = ul;
                 
             } catch (err) {
-                content.innerHTML = '<p style="color: #ef4444;">Error fetching players.</p>';
+                playersDiv.innerHTML = '<p style="color: #ef4444;">Error fetching players.</p>';
             }
         }
     </script>

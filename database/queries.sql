@@ -1,4 +1,3 @@
--- Agent 2: Database Queries & Views
 USE FootballClubDB;
 
 -- 1. Fetch player details with club (INNER JOIN)

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FC Management - Contracts</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .expiring-badge {
+            background-color: #ef4444;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">FC Management</div>
+        <ul>
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="players.html">Players</a></li>
+            <li><a href="contracts.html" class="active">Contracts</a></li>
+            <li><a href="salaries.html">Salaries</a></li>
+            <li><a href="clubs.html">Clubs</a></li>
+            <li><a href="performance.html">Performance</a></li>
+            <li><a href="loaned.html">Loaned</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Active Contracts</h1>
+            <p>View all player agreements across the global club network</p>
+        </div>
+
+        <div class="filters">
+            <select id="contractFilter" onchange="loadContracts()">
+                <option value="all">All Contracts</option>
+                <option value="expiring">Expiring Within 6 Months</option>
+            </select>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Player Name</th>
+                        <th>Club Signed To</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Weekly Wage (£)</th>
+                    </tr>
+                </thead>
+                <tbody id="contBody">
+                    <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        function formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            return new Date(dateStr).toLocaleDateString('en-GB');
+        }
+
+        async function loadContracts() {
+            const isExpiring = document.getElementById('contractFilter').value === 'expiring';
+            const endpoint = isExpiring ? 'expiring_contracts' : 'contracts';
+            
+            // Clear current table
+            document.getElementById('contBody').innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>';
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/${endpoint}`);
+                const contracts = await response.json();
+                const tbody = document.getElementById('contBody');
+                
+                if (contracts.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No contracts found matching criteria.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                
+                // Helper to check 6 month expiry strictly visually when "all" is selected
+                const sixMonthsFromNow = new Date();
+                sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
+                const now = new Date();
+
+                contracts.forEach(cont => {
+                    const endDate = new Date(cont.EndDate);
+                    const isExpWarn = (endDate <= sixMonthsFromNow && endDate >= now) || isExpiring;
+                    const badge = isExpWarn ? '<span class="expiring-badge">Expiring Soon</span>' : '';
+
+                    const row = document.createElement('tr');
+                    // For the expiring API, the WeeklyWage isn't explicitly joined, fallback to N/A
+                    const wageDisplay = cont.WeeklyWage ? `£${parseFloat(cont.WeeklyWage).toLocaleString()}` : 'Top Secret';
+                    
+                    row.innerHTML = `
+                        <td><strong>${cont.PlayerName || cont.Name}</strong></td>
+                        <td><span style="color:var(--accent)">${cont.ClubName || cont.Club}</span></td>
+                        <td>${formatDate(cont.StartDate || null)}</td>
+                        <td>${formatDate(cont.EndDate)} ${badge}</td>
+                        <td><strong>${wageDisplay}</strong></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (err) {
+                document.getElementById('contBody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:red;">Error loading contracts</td></tr>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadContracts);
+    </script>
+</body>
+</html>

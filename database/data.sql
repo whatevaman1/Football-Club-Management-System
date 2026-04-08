@@ -1,4 +1,3 @@
--- Agent 2: Database Sample Data
 USE FootballClubDB;
 
 -- Insert Clubs

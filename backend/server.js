@@ -277,7 +277,17 @@ app.get('/api/dashboard', async (req, res) => {
 
 app.get('/api/clubs', async (req, res) => {
     try {
-        const [rows] = await db.query(`SELECT * FROM Club`);
+        const query = `
+            SELECT 
+                c.*, 
+                m.Name AS ManagerName,
+                GROUP_CONCAT(co.Name SEPARATOR ', ') AS Coaches
+            FROM Club c
+            LEFT JOIN Manager m ON c.ClubID = m.ClubID
+            LEFT JOIN Coach co ON c.ClubID = co.ClubID
+            GROUP BY c.ClubID
+        `;
+        const [rows] = await db.query(query);
         res.json(rows);
     } catch (error) { res.status(500).json({ error: error.message }); }
 });

@@ -1,4 +1,3 @@
--- Agent 2: Database Schema Implementation
 DROP DATABASE IF EXISTS FootballClubDB;
 CREATE DATABASE FootballClubDB;
 USE FootballClubDB;
