@@ -69,8 +69,8 @@ INSERT INTO PlayerSalary (PlayerID, Amount, DatePaid) VALUES
 
 -- Insert Loan Details (Assuming a fictional scenario where some players were loaned)
 INSERT INTO LoanDetail (PlayerID, ParentClubID, LoanClubID, StartDate, EndDate) VALUES
-(4, 2, 7, '2020-08-01', '2021-06-30'), -- Pedri loaned to Milan briefly (fictional for testing)
-(6, 3, 4, '2018-08-01', '2019-06-30'); -- Rashford loaned to Arsenal briefly
+(4, 2, 7, '2026-04-01', '2027-06-30'), -- Pedri loaned to Milan briefly (fictional for testing)
+(6, 3, 4, '2025-04-01', '2028-06-30'); -- Rashford loaned to Arsenal briefly
 
 -- Insert Performances
 INSERT INTO Performance (PlayerID, Season, MatchesPlayed, Goals, Assists, YellowCards, RedCards) VALUES

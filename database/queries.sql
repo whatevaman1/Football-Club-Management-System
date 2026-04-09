@@ -77,11 +77,13 @@ END$$
 
 DELIMITER ;
 
+SHOW CREATE TRIGGER check_contract_expiry;
+
 -- 9. Free Agents View
 CREATE OR REPLACE VIEW FreeAgents AS
 SELECT * FROM Player
 WHERE PlayerID NOT IN (SELECT PlayerID FROM Contract);
-
+SELECT * FROM FreeAgents;
 -- 10. Update Performance
 UPDATE Performance 
 SET Goals = Goals + 1, Assists = Assists + 1 

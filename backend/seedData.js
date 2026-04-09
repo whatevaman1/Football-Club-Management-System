@@ -46,10 +46,21 @@ async function seedDatabase() {
         
         console.log(`Found ${clubIds.length} clubs.`);
         
-        // 3. Generate exactly 15 Players per Club
+        // 3. Generate exactly 15 Players per Club AND map to Coaches
         let playersAdded = 0;
         
         for (const clubId of clubIds) {
+            
+            // Ensure this club has at least one Coach first
+            let [coachRows] = await pool.query('SELECT CoachID FROM Coach WHERE ClubID = ?', [clubId]);
+            let coachId;
+            if (coachRows.length === 0) {
+                const [res] = await pool.query('INSERT INTO Coach (Name, Role, ClubID) VALUES (?, ?, ?)', ['Head Coach ' + clubId, 'Head Coach', clubId]);
+                coachId = res.insertId;
+            } else {
+                coachId = coachRows[0].CoachID;
+            }
+            
             for (let i = 0; i < 15; i++) {
                 const name = `${getRandomItem(firstNames)} ${getRandomItem(lastNames)}`;
                 const nationality = getRandomItem(nationalities);
@@ -68,6 +79,9 @@ async function seedDatabase() {
                 );
                 
                 const playerId = result.insertId;
+                
+                // Map to Coach securely!
+                await pool.query('INSERT INTO PlayerCoach (PlayerID, CoachID) VALUES (?, ?)', [playerId, coachId]);
                 
                 // Generate Performance
                 const matches = getRandomInt(10, 38);
@@ -102,10 +116,10 @@ async function seedDatabase() {
                 
                 playersAdded++;
             }
-            console.log(`Generated 15 players for Club ID ${clubId}...`);
+            console.log(`Generated 15 players and mapped Coach mappings for Club ID ${clubId}...`);
         }
         
-        console.log(`✅ Successfully seeded exactly 15 players per club (${playersAdded} total players)!`);
+        console.log(`✅ Successfully seeded exactly 15 players per club (${playersAdded} total players), mapped tightly to respective coaches!`);
         process.exit(0);
         
     } catch (err) {
